@@ -135,7 +135,7 @@ ARG HUGGINGFACE_ACCESS_TOKEN
 ARG CIVITAI_ACCESS_TOKEN
 
 # Set default model type if none is provided
-ARG MODEL_TYPE=flux2-klein-9b-fp8
+ARG MODEL_TYPE=cached
 
 # Change working directory to ComfyUI
 WORKDIR /comfyui
