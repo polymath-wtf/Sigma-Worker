@@ -176,13 +176,17 @@ RUN if [ "$MODEL_TYPE" = "flux1-krea" ]; then \
     fi
 
 RUN if [ "$MODEL_TYPE" = "flux2-klein-9b-fp8" ]; then \
-wget \
+  wget \
     --header="Authorization: Bearer $HUGGINGFACE_ACCESS_TOKEN" \
     -O /comfyui/models/unet/flux-2-klein-9b-fp8.safetensors \
-    https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors && \
-      wget -O models/clip/qwen_3_8b_fp8mixed.safetensors https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors && \
-      wget -O models/vae/flux2-vae.safetensors https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/vae/flux2-vae.safetensors; \
-    fi
+    https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors
+  wget \
+    -O /comfyui/models/clip/qwen_3_8b_fp8mixed.safetensors \
+    https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors
+  wget \
+    -O /comfyui/models/vae/flux2-vae.safetensors \
+    https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/vae/flux2-vae.safetensors
+fi
 
 RUN if [ "$MODEL_TYPE" = "z-image-turbo" ]; then \
       wget -q -O models/text_encoders/qwen_3_4b.safetensors https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors && \
