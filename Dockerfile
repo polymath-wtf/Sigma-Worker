@@ -192,6 +192,15 @@ RUN if [ "$MODEL_TYPE" = "fast" ]; then \
       wget -q -O models/vae/wan_2.1_vae.safetensors https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors; \
     fi
 
+# MODEL_TYPE=cached  → No models baked into the image.
+# Models are provided at runtime via RunPod's cached model feature.
+# Set the "Model" field on your RunPod endpoint to the HuggingFace repo
+# (e.g. "Seryoger/runpod-endpoint-cache") and the start script will
+# automatically symlink cached files into /comfyui/models/.
+RUN if [ "$MODEL_TYPE" = "cached" ]; then \
+      echo "MODEL_TYPE=cached: skipping model downloads (models will be loaded from RunPod cache at runtime)"; \
+    fi
+
 # Stage 3: Final image
 FROM base AS final
 

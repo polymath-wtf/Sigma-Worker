@@ -26,6 +26,46 @@ from network_volume import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Cached model support
+# ---------------------------------------------------------------------------
+CACHE_DIR = "/runpod-volume/huggingface-cache/hub"
+COMFYUI_MODELS_DIR = "/comfyui/models"
+
+
+def log_cached_model_diagnostics():
+    """Log information about cached models available to the worker."""
+    if not os.path.isdir(CACHE_DIR):
+        logger.info("[cache] No HuggingFace cache directory found at %s", CACHE_DIR)
+        return
+
+    logger.info("[cache] HuggingFace cache directory exists at %s", CACHE_DIR)
+    try:
+        repos = [d for d in os.listdir(CACHE_DIR) if d.startswith("models--")]
+        if repos:
+            logger.info("[cache] Cached repos: %s", ", ".join(repos))
+        else:
+            logger.info("[cache] No cached model repos found")
+    except OSError as e:
+        logger.warning("[cache] Could not list cache directory: %s", e)
+
+    # Log symlinked model files in ComfyUI models dir
+    if os.path.isdir(COMFYUI_MODELS_DIR):
+        symlinks = []
+        for root, _dirs, files in os.walk(COMFYUI_MODELS_DIR):
+            for f in files:
+                fpath = os.path.join(root, f)
+                if os.path.islink(fpath):
+                    rel = os.path.relpath(fpath, COMFYUI_MODELS_DIR)
+                    target = os.readlink(fpath)
+                    symlinks.append(f"{rel} -> {target}")
+        if symlinks:
+            logger.info("[cache] Symlinked model files in ComfyUI:")
+            for s in symlinks:
+                logger.info("[cache]   %s", s)
+        else:
+            logger.info("[cache] No symlinked model files found in %s", COMFYUI_MODELS_DIR)
+
 # Time to wait between API check attempts in milliseconds
 COMFY_API_AVAILABLE_INTERVAL_MS = 50
 # Maximum number of API check attempts
@@ -833,4 +873,5 @@ def handler(job):
 
 if __name__ == "__main__":
     print("worker-comfyui - Starting handler...")
+    log_cached_model_diagnostics()
     runpod.serverless.start({"handler": handler})
