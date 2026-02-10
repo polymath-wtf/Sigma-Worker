@@ -133,7 +133,7 @@ FROM base AS downloader
 
 ARG HUGGINGFACE_ACCESS_TOKEN
 ARG CIVITAI_ACCESS_TOKEN
-echo "HF token is set: ${HUGGINGFACE_ACCESS_TOKEN:+YES}"
+
 # Set default model type if none is provided
 ARG MODEL_TYPE=flux2-klein-9b-fp8
 
