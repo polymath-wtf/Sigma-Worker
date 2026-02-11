@@ -92,6 +92,13 @@ COMFY_HOST = "127.0.0.1:8188"
 REFRESH_WORKER = os.environ.get("REFRESH_WORKER", "false").lower() == "true"
 
 # ---------------------------------------------------------------------------
+# Test / no-GPU mode
+# ---------------------------------------------------------------------------
+# When start.sh detects no GPU (RunPod test phase), it sets COMFYUI_DISABLED=true
+# so the handler can return an immediate success instead of waiting for ComfyUI.
+COMFYUI_DISABLED = os.environ.get("COMFYUI_DISABLED", "false").lower() == "true"
+
+# ---------------------------------------------------------------------------
 # Helper: quick reachability probe of ComfyUI HTTP endpoint (port 8188)
 # ---------------------------------------------------------------------------
 
@@ -562,6 +569,15 @@ def handler(job):
 
     job_input = job["input"]
     job_id = job["id"]
+
+    # In test / no-GPU mode, return immediate success so RunPod testing passes
+    if COMFYUI_DISABLED:
+        print(f"worker-comfyui - COMFYUI_DISABLED=true, returning test success for job {job_id}")
+        return {
+            "status": "success",
+            "message": "Test mode: ComfyUI is disabled (no GPU). Worker is healthy.",
+            "images": [],
+        }
 
     # Make sure that the input is valid
     validated_data, error_message = validate_input(job_input)

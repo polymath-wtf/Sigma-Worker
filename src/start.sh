@@ -119,6 +119,7 @@ fi
 if ! nvidia-smi > /dev/null 2>&1; then
     echo "worker-comfyui: WARNING – No GPU detected (RunPod test environment?)"
     echo "worker-comfyui: Skipping ComfyUI, starting handler-only so the test passes."
+    export COMFYUI_DISABLED=true
     python -u /handler.py
     exit $?
 fi
